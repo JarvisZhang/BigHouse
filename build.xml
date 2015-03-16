@@ -105,7 +105,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/usr/share/ant/lib/ant-junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/local/Cellar/ant/1.9.4/libexec/lib/ant-junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="ssj.jar"/>
         </jar>
         <jar destfile="slave.jar" filesetmanifest="mergewithoutmain">
@@ -115,7 +115,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/usr/share/ant/lib/ant-junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/local/Cellar/ant/1.9.4/libexec/lib/ant-junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="ssj.jar"/>
         </jar>
         <jar destfile="powercap.jar">
@@ -125,7 +125,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/usr/share/ant/lib/ant-junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/local/Cellar/ant/1.9.4/libexec/lib/ant-junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="ssj.jar"/>
         </jar>
     </target>
