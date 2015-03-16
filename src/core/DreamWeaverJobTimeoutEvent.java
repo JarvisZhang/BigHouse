@@ -76,7 +76,6 @@ public final class DreamWeaverJobTimeoutEvent extends AbstractEvent {
      * Notifies the DreamWeaver server processing the job that the job
      * has timed out.
      */
-    @Override
     public void process() {
         this.dreamWeaverServer.handleJobTimeout(this.getTime(), job);
     }

@@ -67,7 +67,6 @@ public final class CoreEnteredParkEvent extends AbstractEvent {
     /**
      * Puts the core into park.
      */
-    @Override
     public void process() {
         this.core.enterPark(this.time);
     }

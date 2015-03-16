@@ -67,7 +67,6 @@ public final class PowerNapTransitionedToNapEvent extends AbstractEvent {
     /**
      * Sets the server to nap.
      */
-    @Override
     public void process() {
         this.server.setToNap(this.getTime());
     }

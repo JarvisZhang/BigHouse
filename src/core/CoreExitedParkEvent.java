@@ -66,7 +66,6 @@ public final class CoreExitedParkEvent extends AbstractEvent {
     /**
      * Takes the core out of park.
      */
-    @Override
     public void process() {
         this.core.exitPark(this.time);
     }

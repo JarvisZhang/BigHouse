@@ -66,7 +66,6 @@ public final class StartBatchEvent extends AbstractEvent {
     /**
      * Processes this event by starting a batch (accepting jobs to the server).
      */
-    @Override
     public void process() {
         this.batchServer.startBatch(this.getTime());
     }

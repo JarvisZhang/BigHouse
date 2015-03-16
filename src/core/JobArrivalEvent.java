@@ -69,7 +69,6 @@ public final class JobArrivalEvent extends JobEvent {
     /**
      * Has the job arrive at a server.
      */
-    @Override
     public void process() {
         this.server.createNewArrival(this.getTime());
         this.server.insertJob(this.getTime(), this.getJob());

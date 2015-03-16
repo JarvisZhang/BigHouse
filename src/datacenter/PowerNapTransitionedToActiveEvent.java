@@ -67,7 +67,6 @@ public final class PowerNapTransitionedToActiveEvent extends AbstractEvent {
     /**
      * Sets the PowerNap server to active.
      */
-    @Override
     public void process() {
         this.server.setToActive(this.getTime());
     }

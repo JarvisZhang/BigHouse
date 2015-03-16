@@ -68,7 +68,6 @@ public final class RecalculateCapsEvent extends AbstractEvent {
     /**
      * Has the PowerCappingEnforcer recalculate power caps for the servers.
      */
-    @Override
     public void process() {
         this.enforcer.recalculateCaps(this.getTime());
     }

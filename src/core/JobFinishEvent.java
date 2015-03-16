@@ -113,7 +113,6 @@ public final class JobFinishEvent extends JobEvent {
         return this.finishingSpeed;
     }
 
-    @Override
     public void process() {
         this.getJob().markFinish(this.getTime());
 

@@ -65,7 +65,6 @@ public final class SocketExitedParkEvent extends AbstractEvent {
     /**
      * Takes the socket out of park.
      */
-    @Override
     public void process() {
         this.socket.exitPark(this.getTime());
     }

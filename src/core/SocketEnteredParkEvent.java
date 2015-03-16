@@ -65,7 +65,6 @@ public final class SocketEnteredParkEvent extends AbstractEvent {
     /**
      * Puts the socket in park.
      */
-    @Override
     public void process() {
         this.socket.enterPark(this.time);
     }
