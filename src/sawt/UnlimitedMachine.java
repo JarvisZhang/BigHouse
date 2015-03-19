@@ -29,7 +29,7 @@
  *
  */
 
-package experiment;
+package sawt;
 
 import generator.EmpiricalGenerator;
 import generator.MTRandom;
@@ -46,9 +46,9 @@ import datacenter.PowerNapServer;
 import datacenter.Core.CorePowerPolicy;
 import datacenter.Socket.SocketPowerPolicy;
 
-public class PowerCappingExperiment {
+public class UnlimitedMachine {
 
-	public PowerCappingExperiment(){
+	public UnlimitedMachine(){
 
 	}
 	
@@ -80,6 +80,7 @@ public class PowerCappingExperiment {
 		System.out.println("recalc rho " + scaledQps/(cores*(1/averageServiceTime)));
 		System.out.println("arrivalScale " + arrivalScale);
 		System.out.println("Average interarrival time " + averageInterarrival);
+		System.out.println("Average service time " + averageServiceTime);
 		System.out.println("QPS as is " +qps);
 		System.out.println("Scaled QPS " +scaledQps);
 		System.out.println("Service rate as is " + serviceRate);
@@ -96,37 +97,38 @@ public class PowerCappingExperiment {
 		// add experiment outputs
 		ExperimentOutput experimentOutput = new ExperimentOutput();
 		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .95, .05, 5000);
-		experimentOutput.addOutput(StatName.SERVER_LEVEL_CAP, .05, .95, .05, 5000);
-		Experiment experiment = new Experiment("Power capping test", rand, experimentInput, experimentOutput);
+		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .95, .05, 5000);
+//		experimentOutput.addOutput(StatName.SERVER_LEVEL_CAP, .05, .95, .05, 5000);
+		Experiment experiment = new Experiment("Unlimited test", rand, experimentInput, experimentOutput);
 		
 		// setup datacenter
 		DataCenter dataCenter = new DataCenter();
 		
-		double capPeriod = 1.0;
-		double globalCap = 65*nServers;
-		double maxPower = 100*nServers;
-		double minPower = 59*nServers;
-		PowerCappingEnforcer enforcer = new PowerCappingEnforcer(experiment, capPeriod, globalCap, maxPower, minPower);
+//		double capPeriod = 1.0;
+//		double globalCap = 65*nServers;
+//		double maxPower = 100*nServers;
+//		double minPower = 59*nServers;
+//		PowerCappingEnforcer enforcer = new PowerCappingEnforcer(experiment, capPeriod, globalCap, maxPower, minPower);
 		for(int i = 0; i < nServers; i++) {
 			Server server = new Server(sockets, cores, experiment, arrivalGenerator, serviceGenerator);
 //			Server server = new PowerNapServer(sockets, cores, experiment, arrivalGenerator, serviceGenerator, 0.001, 5);
 
-			server.setSocketPolicy(SocketPowerPolicy.NO_MANAGEMENT);
-			server.setCorePolicy(CorePowerPolicy.NO_MANAGEMENT);	
-			double coreActivePower = 40 * (4.0/5)/cores;
-			double coreHaltPower = coreActivePower*.2;
-			double coreParkPower = 0;
+//			server.setSocketPolicy(SocketPowerPolicy.NO_MANAGEMENT);
+//			server.setCorePolicy(CorePowerPolicy.NO_MANAGEMENT);	
+//			double coreActivePower = 40 * (4.0/5)/cores;
+//			double coreHaltPower = coreActivePower*.2;
+//			double coreParkPower = 0;
+//
+//			double socketActivePower = 40 * (1.0/5)/sockets;
+//			double socketParkPower = 0;
 
-			double socketActivePower = 40 * (1.0/5)/sockets;
-			double socketParkPower = 0;
+//			server.setCoreActivePower(coreActivePower);
+//			server.setCoreParkPower(coreParkPower);
+//			server.setCoreIdlePower(coreHaltPower);
 
-			server.setCoreActivePower(coreActivePower);
-			server.setCoreParkPower(coreParkPower);
-			server.setCoreIdlePower(coreHaltPower);
-
-			server.setSocketActivePower(socketActivePower);
-			server.setSocketParkPower(socketParkPower);
-			enforcer.addServer(server);
+//			server.setSocketActivePower(socketActivePower);
+//			server.setSocketParkPower(socketParkPower);
+//			enforcer.addServer(server);
 			dataCenter.addServer(server);
 		}//End for i
 		
@@ -141,18 +143,22 @@ public class PowerCappingExperiment {
 		System.out.println("Response Mean: " + responseTimeMean);
 		double responseTime95th = experiment.getStats().getStat(StatName.SOJOURN_TIME).getQuantile(.95);
 		System.out.println("Response 95: " + responseTime95th);
-		double averageServerLevelCap = experiment.getStats().getStat(StatName.SERVER_LEVEL_CAP).getAverage();
-		System.out.println("Average Server Cap : " + averageServerLevelCap);
+		double waitingTimeMean = experiment.getStats().getStat(StatName.WAIT_TIME).getAverage();
+		System.out.println("Waiting Mean: " + waitingTimeMean);
+		double waitingTime95th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.95);
+		System.out.println("Waiting 95: " + waitingTime95th);
+//		double averageServerLevelCap = experiment.getStats().getStat(StatName.SERVER_LEVEL_CAP).getAverage();
+//		System.out.println("Average Server Cap : " + averageServerLevelCap);
 		
 	}//End run()
 	
 	public static void main(String[] args) {
-		System.out.println("===== Power Capping Experiment =====");
+		System.out.println("===== Unlimited Machine Experiment =====");
 		System.out.println("workload: " + args[1]);
 		System.out.println("server numbers: " + args[2]);
-		System.out.println("====================================");
-		PowerCappingExperiment exp  = new PowerCappingExperiment();
+		System.out.println("========================================");
+		UnlimitedMachine exp  = new UnlimitedMachine();
 		exp.run(args[0],args[1],Integer.valueOf(args[2]));
 	}
 	
-}//End PowerCappingExperiment
+}//End UnlimitedMachine

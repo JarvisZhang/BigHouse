@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import sawt.JobCollector;
 import stat.Statistic;
 import stat.StatisticsCollection;
 import datacenter.DataCenter;
@@ -205,7 +206,7 @@ public final class Experiment implements Serializable, Cloneable {
         long startTime = System.currentTimeMillis();
 
         this.nEventsProccessed = 0;
-        Sim.printBanner();
+//        Sim.printBanner();
         System.out.println("Starting simulation");
         //TODO fix magic numbers
         int orderOfMag = 5;
@@ -314,4 +315,10 @@ public final class Experiment implements Serializable, Cloneable {
         this.stop = true;
     }
 
+    /**
+     * 
+     */
+    public JobCollector getJobCollector() {
+    	return this.getOutput().getJobCollector();
+    }
 }

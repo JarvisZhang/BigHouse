@@ -35,6 +35,7 @@ import java.io.Serializable;
 
 import core.Constants.StatName;
 import core.Constants.TimeWeightedStatName;
+import sawt.JobCollector;
 import stat.Statistic;
 import stat.StatisticsCollection;
 import stat.TimeWeightedStatistic;
@@ -56,13 +57,18 @@ public final class ExperimentOutput implements Serializable {
      * The collection of statistics for the simulation.
      */
     private StatisticsCollection statisticsCollection;
+    
+    /**
+     * 
+     */
+    private JobCollector jobCollector;
 
     /**
      * Creates a new ExperimentOutput.
      */
     public ExperimentOutput() {
         this.statisticsCollection = new StatisticsCollection();
-
+        this.jobCollector = new JobCollector();
     }
 
     /**
@@ -177,4 +183,10 @@ public final class ExperimentOutput implements Serializable {
         return this.statisticsCollection.getTimeWeightedStat(statName);
     }
 
+    /**
+     * 
+     */
+    public JobCollector getJobCollector() {
+    	return this.jobCollector;
+    }
 }

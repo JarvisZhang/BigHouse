@@ -124,6 +124,21 @@ public class Server implements Powerable, Serializable {
      * the rest of the logic doesn't add/drop jobs.
      */
     protected int jobsInServerInvariant;
+    
+    /**
+     * 
+     */
+    private long serverId;
+    
+    /**
+     * 
+     */
+    private static long currentId = 0;
+    
+    /**
+     * 
+     */
+    private long currentJobId = 0;
 
     /**
      * Creates a new server.
@@ -139,6 +154,7 @@ public class Server implements Powerable, Serializable {
                   final Experiment anExperiment,
                   final Generator anArrivalGenerator,
                   final Generator aServiceGenerator) {
+    	this.serverId = assignId();
         this.experiment = anExperiment;
         this.arrivalGenerator = anArrivalGenerator;
         this.serviceGenerator = aServiceGenerator;
@@ -151,6 +167,32 @@ public class Server implements Powerable, Serializable {
         this.scheduler = Scheduler.LOAD_BALANCE;
         this.jobsInServerInvariant = 0;
         this.paused = false;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private long assignId() {
+    	long toReturn = Server.currentId;
+    	Server.currentId++;
+    	return toReturn;
+    }
+    
+    /**
+     * 
+     */
+    private long assignJobId() {
+    	long toReturn = this.currentJobId;
+    	this.currentJobId++;
+    	return toReturn;
+    }
+    
+    /**
+     * 
+     */
+    public final long getServerId() {
+    	return this.serverId;
     }
 
     /**
@@ -194,7 +236,8 @@ public class Server implements Powerable, Serializable {
                                 StatName.GENERATED_SERVICE_TIME);
         serviceStat.addSample(serviceTime);
 
-        Job job = new Job(serviceTime);
+//        Job job = new Job(serviceTime);
+        Job job = new Job(serviceTime, this.assignJobId());
         JobArrivalEvent jobArrivalEvent
                 = new JobArrivalEvent(arrivalTime,
                                       experiment,

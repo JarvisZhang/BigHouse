@@ -114,6 +114,18 @@ public class Job {
         this.jobFinishEvent = null;
         this.lastResumeTime = 0.0;
     }
+    
+    /**
+     * 
+     */
+    public Job(final double theJobSize, final long jobId) {
+    	this.amountCompleted = 0.0;
+        this.amountDelayed = 0.0;
+        this.jobSize = theJobSize;
+        this.jobId = jobId;
+        this.jobFinishEvent = null;
+        this.lastResumeTime = 0.0;
+    }
 
 //    public void setAtLimit(boolean atLimit) {
 //        this.atLimit = atLimit;

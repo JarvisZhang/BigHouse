@@ -31,6 +31,7 @@
 
 package core;
 
+import sawt.JobCollector;
 import stat.Statistic;
 import datacenter.Server;
 
@@ -130,6 +131,9 @@ public final class JobFinishEvent extends JobEvent {
         Statistic waitStat = this.getExperiment().getStats().getStat(
                                                 Constants.StatName.WAIT_TIME);
         waitStat.addSample(waitTime);
+        
+        JobCollector jobCollector = this.getExperiment().getJobCollector();
+        jobCollector.addSample(this.server, this.getJob());
 
         if (sojournTime < 0) {
             System.out.println("Job " + this.getJob().getJobId()
