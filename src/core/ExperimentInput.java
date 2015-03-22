@@ -32,6 +32,9 @@
 package core;
 
 import java.io.Serializable;
+
+import sawt.ServiceTimeFilter;
+import core.Constants.WorkType;
 import datacenter.DataCenter;
 
 /**
@@ -50,6 +53,16 @@ public final class ExperimentInput implements Serializable {
      * The datacenter modeled in the simulation.
      */
     private DataCenter datacenter;
+    
+    /**
+     * 
+     */
+    private WorkType workType;
+    
+    /**
+     * 
+     */
+    private ServiceTimeFilter serviceTimeFilter;
 
     /**
      * Creates a new ExperimentInput.
@@ -73,4 +86,22 @@ public final class ExperimentInput implements Serializable {
         return this.datacenter;
     }
 
+    /**
+     * 
+     */
+    public void setWorkType(final WorkType workType) {
+    	this.workType = workType;
+    }
+    
+    public WorkType getWorkType() {
+    	return this.workType;
+    }
+    
+    public void setServiceTimeFilter(ServiceTimeFilter serviceTimeFilter) {
+    	this.serviceTimeFilter = serviceTimeFilter;
+    }
+    
+    public ServiceTimeFilter getServiceTimeFilter() {
+    	return this.serviceTimeFilter;
+    }
 }

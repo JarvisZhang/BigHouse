@@ -12,12 +12,24 @@ public class JobCollector {
 	
 	private HashMap<Server, Vector<Job>> jobInfo;
 	
+	private HashMap<Long, Integer> jobCounter;
+	
+	private Vector<Long> finishJobVec;
+	
+	private long emptyJobNum;
+	
+	private int nServers;
+	
 	private static long sampleNumberMax = 15;
 	
 	private boolean stop = false;
 	
-	public JobCollector() {
+	public JobCollector(int nServers) {
 		this.jobInfo = new HashMap<Server, Vector<Job>>();
+		this.jobCounter = new HashMap<Long, Integer>();
+		this.emptyJobNum = 0;
+		this.nServers = nServers;
+		this.finishJobVec = new Vector<Long>();
 	}
 	
 	public void addSample(Server server, Job job) {
@@ -62,5 +74,27 @@ public class JobCollector {
 			}
 			System.out.println("----------");
 		}
+	}
+	
+	public boolean returnToMaster(Job aJob) {
+		int currentCount = this.jobCounter.getOrDefault(aJob.getJobId(), 0);
+		if(currentCount != 0) {
+			this.jobCounter.replace(aJob.getJobId(), ++currentCount);
+		}
+		else {
+			this.jobCounter.put(aJob.getJobId(), 1);
+		}
+		
+		boolean firstFinished = false;
+		if(!(this.finishJobVec.contains(aJob.getJobId())) && aJob.getFinishTime() != 0) {
+			this.finishJobVec.add(aJob.getJobId());
+			firstFinished = true;
+		}
+		
+		if(currentCount == this.nServers) {
+			this.jobCounter.remove(aJob.getJobId());
+			this.finishJobVec.remove(aJob.getJobId());
+		}
+		return firstFinished;
 	}
 }

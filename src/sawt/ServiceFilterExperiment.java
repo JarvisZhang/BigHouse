@@ -1,5 +1,6 @@
 package sawt;
 
+import core.Constants.WorkType;
 import core.Experiment;
 import core.ExperimentInput;
 import core.ExperimentOutput;
@@ -10,9 +11,9 @@ import generator.EmpiricalGenerator;
 import generator.MTRandom;
 import math.EmpiricalDistribution;
 
-public class BlindSpeculationExperiment {
+public class ServiceFilterExperiment {
 	
-	public BlindSpeculationExperiment() {
+	public ServiceFilterExperiment() {
 		
 	}
 
@@ -23,7 +24,7 @@ public class BlindSpeculationExperiment {
 		String serviceFile = workloadDir+"workloads/"+workload+".service.cdf";
 
 		// specify distribution
-		int cores = 1;
+		int cores = 4;
 		int sockets = 1;
 		double targetRho = .5;
 		
@@ -58,8 +59,11 @@ public class BlindSpeculationExperiment {
 		ExperimentOutput experimentOutput = new ExperimentOutput();
 		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .95, .05, 5000);
 		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .95, .05, 5000);
+		
+		experimentOutput.setJobCollector(nServers);
+		
 		MTRandom rand = new MTRandom(1);
-		Experiment experiment = new Experiment("Unlimited test", rand, experimentInput, experimentOutput);
+		Experiment experiment = new Experiment("Service Filter experiment", rand, experimentInput, experimentOutput);
 		
 		// setup datacenter
 		DataCenter dataCenter = new DataCenter();
@@ -73,7 +77,13 @@ public class BlindSpeculationExperiment {
 			dataCenter.addServer(server);
 		}//End for i
 		
+		long maxSize = 1000;
+		double sla = 400;//400ms
+		ServiceTimeFilter serviceTimeFilter = new ServiceTimeFilter(maxSize, sla);
+		
+		experimentInput.setServiceTimeFilter(serviceTimeFilter);
 		experimentInput.setDataCenter(dataCenter);
+		experimentInput.setWorkType(WorkType.SPECULATE);
 
 		// run the experiment
 		experiment.run();
@@ -89,7 +99,7 @@ public class BlindSpeculationExperiment {
 		double waitingTime95th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.95);
 		System.out.println("Waiting 95: " + waitingTime95th);
 		
-//		experiment.getJobCollector().printAllSample();
+		experiment.getJobCollector().printAllSample();
 	}//End run()
 	
 	public static void main(String[] args) {
@@ -97,7 +107,7 @@ public class BlindSpeculationExperiment {
 		System.out.println("workload: " + args[1]);
 		System.out.println("worker numbers: " + args[2]);
 		System.out.println("========================================");
-		BlindSpeculationExperiment exp  = new BlindSpeculationExperiment();
+		ServiceFilterExperiment exp  = new ServiceFilterExperiment();
 		exp.run(args[0],args[1],Integer.valueOf(args[2]));
 	}
 }

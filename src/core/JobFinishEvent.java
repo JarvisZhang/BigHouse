@@ -31,6 +31,7 @@
 
 package core;
 
+import core.Constants.WorkType;
 import sawt.JobCollector;
 import stat.Statistic;
 import datacenter.Server;
@@ -119,6 +120,12 @@ public final class JobFinishEvent extends JobEvent {
 
         this.server.removeJob(this.getTime(), this.getJob());
 
+//        if(this.server.getExperiment().getWorkType() == WorkType.SPECULATE) {
+//	        JobCollector jobCollector = this.server.getExperiment().getJobCollector();
+//	        boolean firstFinished = jobCollector.returnToMaster(this.getJob());
+//	        if(!firstFinished)
+//	        	return;
+//        }
         double sojournTime = this.getJob().getFinishTime()
                                 - this.getJob().getArrivalTime();
         Statistic sojournStat = this.getExperiment().getStats().getStat(
@@ -132,8 +139,8 @@ public final class JobFinishEvent extends JobEvent {
                                                 Constants.StatName.WAIT_TIME);
         waitStat.addSample(waitTime);
         
-        JobCollector jobCollector = this.getExperiment().getJobCollector();
-        jobCollector.addSample(this.server, this.getJob());
+//        JobCollector jobCollector = this.getExperiment().getJobCollector();
+//        jobCollector.addSample(this.server, this.getJob());
 
         if (sojournTime < 0) {
             System.out.println("Job " + this.getJob().getJobId()

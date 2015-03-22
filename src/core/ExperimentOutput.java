@@ -68,7 +68,6 @@ public final class ExperimentOutput implements Serializable {
      */
     public ExperimentOutput() {
         this.statisticsCollection = new StatisticsCollection();
-        this.jobCollector = new JobCollector();
     }
 
     /**
@@ -188,5 +187,12 @@ public final class ExperimentOutput implements Serializable {
      */
     public JobCollector getJobCollector() {
     	return this.jobCollector;
+    }
+    
+    /**
+     * 
+     */
+    public void setJobCollector(int nServers) {
+    	this.jobCollector = new JobCollector(nServers);
     }
 }

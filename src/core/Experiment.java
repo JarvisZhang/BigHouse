@@ -38,7 +38,9 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import core.Constants.WorkType;
 import sawt.JobCollector;
+import sawt.ServiceTimeFilter;
 import stat.Statistic;
 import stat.StatisticsCollection;
 import datacenter.DataCenter;
@@ -320,5 +322,20 @@ public final class Experiment implements Serializable, Cloneable {
      */
     public JobCollector getJobCollector() {
     	return this.getOutput().getJobCollector();
+    }
+    
+    /**
+     * 
+     */
+    public long getServerNumber() {
+    	return this.experimentInput.getDataCenter().getServers().size();
+    }
+    
+    public WorkType getWorkType() {
+    	return this.getInput().getWorkType();
+    }
+    
+    public ServiceTimeFilter getServieTimeFilter() {
+    	return this.getInput().getServiceTimeFilter();
     }
 }

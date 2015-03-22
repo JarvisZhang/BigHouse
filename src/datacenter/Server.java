@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import sawt.SurvivorGenerator;
 import stat.Statistic;
 import stat.TimeWeightedStatistic;
 import core.Constants;
@@ -238,6 +239,7 @@ public class Server implements Powerable, Serializable {
 
 //        Job job = new Job(serviceTime);
         Job job = new Job(serviceTime, this.assignJobId());
+        SurvivorGenerator.generate(job, this);
         JobArrivalEvent jobArrivalEvent
                 = new JobArrivalEvent(arrivalTime,
                                       experiment,

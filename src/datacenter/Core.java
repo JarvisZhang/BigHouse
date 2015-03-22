@@ -33,6 +33,8 @@ package datacenter;
 
 import java.io.Serializable;
 
+import sawt.ServiceTimeFilter;
+import core.Constants.WorkType;
 import core.CoreEnteredParkEvent;
 import core.CoreExitedParkEvent;
 import core.AbstractEvent;
@@ -224,10 +226,20 @@ public final class Core implements Powerable, Serializable {
             double slowdown = (1 - alpha) + alpha / this.speed;
             double finishTime = time + this.job.getSize() / slowdown;
             Server server = this.socket.getServer();
+//            ServiceTimeFilter serviceTimeFilter = server.getExperiment().getServieTimeFilter();
+            
+//            if(serviceTimeFilter != null) {
+//            	boolean continueRun = serviceTimeFilter.predictValid(aJob);
+//            	if(!continueRun) {
+//            		this.experiment.getJobCollector().returnToMaster(aJob);
+//            		return;
+//            	}
+//            }
             JobFinishEvent finishEvent = new JobFinishEvent(finishTime,
                     experiment, aJob, server, time, this.speed);
             aJob.setLastResumeTime(time);
             this.experiment.addEvent(finishEvent);
+            
             // Core now goes into full power state
             this.powerState = PowerState.ACTIVE;
         }

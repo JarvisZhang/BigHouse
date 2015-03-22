@@ -91,6 +91,18 @@ public final class Constants {
         /** Time-weighted fraction of time a server is idle. */
         SERVER_IDLE_FRACTION
     }
+    
+    /**
+     * 
+     */
+    public static enum WorkType {
+    	
+    	DEFAULT,
+    	
+    	SPECULATE,
+    	
+    	RANDOM_1
+    }
 
     /* Power breakdown for servers. */
     // TODO(meisner@umich.edu) Fill in these values.

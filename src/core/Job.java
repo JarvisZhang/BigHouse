@@ -84,6 +84,11 @@ public class Job {
      * A static incrementing variable for creating job IDs.
      */
     private static long currentId;
+    
+    /**
+     * 
+     */
+    private boolean isSurvivor;
 
 //    /**
 //     *
@@ -125,6 +130,10 @@ public class Job {
         this.jobId = jobId;
         this.jobFinishEvent = null;
         this.lastResumeTime = 0.0;
+    }
+    
+    public final void setSurvivor(final boolean isSurvivor) {
+        this.isSurvivor = isSurvivor;
     }
 
 //    public void setAtLimit(boolean atLimit) {
@@ -320,6 +329,10 @@ public class Job {
      */
     public final double getLastResumeTime() {
         return this.lastResumeTime;
+    }
+    
+    public final boolean isSurvivor() {
+    	return this.isSurvivor;
     }
 
 }
