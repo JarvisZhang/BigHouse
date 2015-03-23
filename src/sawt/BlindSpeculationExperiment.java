@@ -23,7 +23,7 @@ public class BlindSpeculationExperiment {
 		String serviceFile = workloadDir+"workloads/"+workload+".service.cdf";
 
 		// specify distribution
-		int cores = 1;
+		int cores = 4;
 		int sockets = 1;
 		double targetRho = .5;
 		
