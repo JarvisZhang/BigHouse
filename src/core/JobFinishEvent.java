@@ -139,8 +139,9 @@ public final class JobFinishEvent extends JobEvent {
                                                 Constants.StatName.WAIT_TIME);
         waitStat.addSample(waitTime);
         
-//        JobCollector jobCollector = this.getExperiment().getJobCollector();
-//        jobCollector.addSample(this.server, this.getJob());
+        /* print samples */
+        JobCollector jobCollector = this.getExperiment().getJobCollector();
+        jobCollector.addSample(this.server, this.getJob());
 
         if (sojournTime < 0) {
             System.out.println("Job " + this.getJob().getJobId()

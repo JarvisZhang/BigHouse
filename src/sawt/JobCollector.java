@@ -65,11 +65,13 @@ public class JobCollector {
 			for(Job job : entry.getValue()) {
 				System.out.println("Job "
 						+ job.getJobId()
-						+ ": arrivalTime = "
+						+ ": \tis survivor = "
+						+ job.isSurvivor()
+						+ ": \tarrivalTime = "
 						+ job.getArrivalTime()
-						+ ", startTime = "
+						+ ", \tstartTime = "
 						+ job.getStartTime()
-						+ ", finishTime = "
+						+ ", \tfinishTime = "
 						+ job.getFinishTime());
 			}
 			System.out.println("----------");

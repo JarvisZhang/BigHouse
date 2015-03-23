@@ -9,9 +9,9 @@ public class Survivor {
 	
 	private long jobId;
 	
-	private long serverId;
+	private int serverId;
 	
-	private long count;
+	private int count;
 	
 	public Survivor(final Job job, final Server server) {
 		this.jobId = job.getJobId();
@@ -35,8 +35,8 @@ public class Survivor {
 		return this.count == 0;
 	}
 
-	private long assignServerId(final long serverNum) {
+	private int assignServerId(final int serverNum) {
 		Random rand = new Random();
-		return rand.nextInt();
+		return rand.nextInt(serverNum);
 	}
 }

@@ -327,7 +327,7 @@ public final class Experiment implements Serializable, Cloneable {
     /**
      * 
      */
-    public long getServerNumber() {
+    public int getServerNumber() {
     	return this.experimentInput.getDataCenter().getServers().size();
     }
     

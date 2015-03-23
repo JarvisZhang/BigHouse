@@ -239,7 +239,7 @@ public class Server implements Powerable, Serializable {
 
 //        Job job = new Job(serviceTime);
         Job job = new Job(serviceTime, this.assignJobId());
-//        SurvivorGenerator.generate(job, this);
+        SurvivorGenerator.generate(job, this);
         JobArrivalEvent jobArrivalEvent
                 = new JobArrivalEvent(arrivalTime,
                                       experiment,
