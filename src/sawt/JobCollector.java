@@ -1,7 +1,6 @@
 package sawt;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -16,7 +15,9 @@ public class JobCollector {
 	
 	private Vector<Long> finishJobVec;
 	
-	private long emptyJobNum;
+	private long filteredJobs;
+	
+	private long finishedJobs;
 	
 	private int nServers;
 	
@@ -27,7 +28,8 @@ public class JobCollector {
 	public JobCollector(int nServers) {
 		this.jobInfo = new HashMap<Server, Vector<Job>>();
 		this.jobCounter = new HashMap<Long, Integer>();
-		this.emptyJobNum = 0;
+		this.filteredJobs = 0;
+		this.finishedJobs = 0;
 		this.nServers = nServers;
 		this.finishJobVec = new Vector<Long>();
 	}
@@ -72,7 +74,11 @@ public class JobCollector {
 						+ ", \tstartTime = "
 						+ job.getStartTime()
 						+ ", \tfinishTime = "
-						+ job.getFinishTime());
+						+ job.getFinishTime()
+						+ ", \tresponseTime = "
+						+ (job.getFinishTime() - job.getArrivalTime())
+						+ ", \tfirstFinished = "
+						+ job.getFirstFinished());
 			}
 			System.out.println("----------");
 		}
@@ -84,7 +90,7 @@ public class JobCollector {
 			this.jobCounter.replace(aJob.getJobId(), ++currentCount);
 		}
 		else {
-			this.jobCounter.put(aJob.getJobId(), 1);
+			this.jobCounter.put(aJob.getJobId(), ++currentCount);
 		}
 		
 		boolean firstFinished = false;
@@ -98,5 +104,21 @@ public class JobCollector {
 			this.finishJobVec.remove(aJob.getJobId());
 		}
 		return firstFinished;
+	}
+	
+	public void updateFilteredNum() {
+		this.filteredJobs++;
+	}
+	
+	public void updateFinishedNum() {
+		this.finishedJobs++;
+	}
+	
+	public long getFilteredNum() {
+		return this.filteredJobs;
+	}
+	
+	public long getFinishedNum() {
+		return this.finishedJobs;
 	}
 }

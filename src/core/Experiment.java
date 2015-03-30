@@ -38,9 +38,11 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import core.Constants.FilterType;
 import core.Constants.WorkType;
 import sawt.JobCollector;
 import sawt.ServiceTimeFilter;
+import sawt.SurvivorGenerator;
 import stat.Statistic;
 import stat.StatisticsCollection;
 import datacenter.DataCenter;
@@ -226,13 +228,13 @@ public final class Experiment implements Serializable, Cloneable {
                 while (statIter.hasNext()) {
                     Statistic currentStat = statIter.next();
                     if (!currentStat.isConverged()) {
-                        System.out.println("Still waiting for "
-                                + currentStat.getStatName()
-                                + " at mean converge of "
-                                + currentStat.getMeanAccuracy()
-                                + " and quantile converge of "
-                                + currentStat.getQuantileAccuracy());
-                        currentStat.printStatInfo();
+//                        System.out.println("Still waiting for "
+//                                + currentStat.getStatName()
+//                                + " at mean converge of "
+//                                + currentStat.getMeanAccuracy()
+//                                + " and quantile converge of "
+//                                + currentStat.getQuantileAccuracy());
+//                        currentStat.printStatInfo();
                     }
                 }
                 orderOfMag++;
@@ -337,5 +339,13 @@ public final class Experiment implements Serializable, Cloneable {
     
     public ServiceTimeFilter getServieTimeFilter() {
     	return this.getInput().getServiceTimeFilter();
+    }
+    
+    public FilterType getFilterType() {
+    	return this.getInput().getFilterType();
+    }
+    
+    public SurvivorGenerator getSurvivorGenerator() {
+    	return this.getInput().getSurvivorGenerator();
     }
 }

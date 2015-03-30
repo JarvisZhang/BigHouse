@@ -199,11 +199,14 @@ public final class Socket implements Powerable, Serializable {
         if (this.powerState == SocketPowerState.ACTIVE) {
             // Pick the first core off the available cores
             Core core = this.availableCores.remove(0);
-            core.insertJob(time, job);
+//            core.insertJob(time, job);
             this.busyCores.add(core);
 
             // Save the core the job is on so we can remove it later
             this.jobToCoreMap.put(job, core);
+            
+            // move to last
+            core.insertJob(time, job);
         } else if (this.powerState
                    == SocketPowerState.TRANSITIONG_TO_LOW_POWER_IDLE) {
             this.transitionQueue.add(job);

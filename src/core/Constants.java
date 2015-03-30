@@ -103,6 +103,18 @@ public final class Constants {
     	
     	RANDOM_1
     }
+    
+    /**
+     * 
+     */
+    public static enum FilterType {
+    	
+    	None,
+    	
+    	ServiceFilter,
+    	
+    	ServiceAndWaitFilter
+    }
 
     /* Power breakdown for servers. */
     // TODO(meisner@umich.edu) Fill in these values.

@@ -31,8 +31,10 @@
 
 package core;
 
+import core.Constants.FilterType;
 import core.Constants.WorkType;
 import sawt.JobCollector;
+import sawt.ServiceTimeFilter;
 import stat.Statistic;
 import datacenter.Server;
 
@@ -119,13 +121,27 @@ public final class JobFinishEvent extends JobEvent {
         this.getJob().markFinish(this.getTime());
 
         this.server.removeJob(this.getTime(), this.getJob());
-
-//        if(this.server.getExperiment().getWorkType() == WorkType.SPECULATE) {
-//	        JobCollector jobCollector = this.server.getExperiment().getJobCollector();
-//	        boolean firstFinished = jobCollector.returnToMaster(this.getJob());
-//	        if(!firstFinished)
-//	        	return;
-//        }
+        
+        if(this.server.getExperiment().getFilterType() == FilterType.ServiceFilter ||
+        		this.server.getExperiment().getFilterType() == FilterType.ServiceAndWaitFilter) {
+	        // Update service time filter
+	        ServiceTimeFilter serviceTimeFilter = this.getExperiment().getServieTimeFilter();
+	        serviceTimeFilter.addSample(this.getJob());
+        }
+        
+        /* return the first finished job */
+        if(this.server.getExperiment().getWorkType() == WorkType.SPECULATE) {
+        	JobCollector jobCollector = this.server.getExperiment().getJobCollector();
+	        boolean firstFinished = jobCollector.returnToMaster(this.getJob());
+	        
+	        /* print samples */
+	        jobCollector.addSample(this.server, this.getJob());
+	        this.getJob().setFirstFinished(firstFinished);
+	        
+	        if(!firstFinished)
+	        	return;
+        }
+        
         double sojournTime = this.getJob().getFinishTime()
                                 - this.getJob().getArrivalTime();
         Statistic sojournStat = this.getExperiment().getStats().getStat(
@@ -138,10 +154,6 @@ public final class JobFinishEvent extends JobEvent {
         Statistic waitStat = this.getExperiment().getStats().getStat(
                                                 Constants.StatName.WAIT_TIME);
         waitStat.addSample(waitTime);
-        
-        /* print samples */
-        JobCollector jobCollector = this.getExperiment().getJobCollector();
-        jobCollector.addSample(this.server, this.getJob());
 
         if (sojournTime < 0) {
             System.out.println("Job " + this.getJob().getJobId()

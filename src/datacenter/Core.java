@@ -34,6 +34,7 @@ package datacenter;
 import java.io.Serializable;
 
 import sawt.ServiceTimeFilter;
+import core.Constants.FilterType;
 import core.Constants.WorkType;
 import core.CoreEnteredParkEvent;
 import core.CoreExitedParkEvent;
@@ -226,22 +227,30 @@ public final class Core implements Powerable, Serializable {
             double slowdown = (1 - alpha) + alpha / this.speed;
             double finishTime = time + this.job.getSize() / slowdown;
             Server server = this.socket.getServer();
-//            ServiceTimeFilter serviceTimeFilter = server.getExperiment().getServieTimeFilter();
             
-//            if(serviceTimeFilter != null) {
-//            	boolean continueRun = serviceTimeFilter.predictValid(aJob);
-//            	if(!continueRun) {
-//            		this.experiment.getJobCollector().returnToMaster(aJob);
-//            		return;
-//            	}
-//            }
+            // Core now goes into full power state
+            this.powerState = PowerState.ACTIVE;
+            
+            if(this.experiment.getFilterType() == FilterType.ServiceFilter || 
+            		this.experiment.getFilterType() == FilterType.ServiceAndWaitFilter) {
+	            // Add serviceTimeFilter
+	            ServiceTimeFilter serviceTimeFilter = server.getExperiment().getServieTimeFilter();
+	            if(serviceTimeFilter != null) {
+	            	boolean continueRun = serviceTimeFilter.predictValid(aJob);
+	            	if(!continueRun) {
+	            		this.experiment.getJobCollector().returnToMaster(aJob);
+	            		this.experiment.getJobCollector().updateFilteredNum();
+	            		this.socket.getServer().removeJob(time, aJob);
+	            		return;
+	            	}
+	            }
+	            this.experiment.getJobCollector().updateFinishedNum();
+            }
+            
             JobFinishEvent finishEvent = new JobFinishEvent(finishTime,
                     experiment, aJob, server, time, this.speed);
             aJob.setLastResumeTime(time);
             this.experiment.addEvent(finishEvent);
-            
-            // Core now goes into full power state
-            this.powerState = PowerState.ACTIVE;
         }
     }
 

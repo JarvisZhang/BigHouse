@@ -12,13 +12,13 @@ import generator.EmpiricalGenerator;
 import generator.MTRandom;
 import math.EmpiricalDistribution;
 
-public class ServiceFilterExperiment {
+public class ClonesExperiment {
 	
-	public ServiceFilterExperiment() {
+	public ClonesExperiment() {
 		
 	}
 
-	public void run(String workloadDir, String workload, int nServers, double targetRho, double sla) {
+	public void run(String workloadDir, String workload, int nServers, double targetRho) {
 
 		// service file
 		String arrivalFile = workloadDir+"workloads/"+workload+".arrival.cdf";
@@ -27,7 +27,7 @@ public class ServiceFilterExperiment {
 		// specify distribution
 		int cores = 4;
 		int sockets = 1;
-//		double targetRho = .75;
+//		double targetRho = .9;
 		
 //		EmpiricalDistribution arrivalDistribution = EmpiricalDistribution.loadDistribution(arrivalFile, 1e-3);
 //		EmpiricalDistribution serviceDistribution = EmpiricalDistribution.loadDistribution(serviceFile, 1e-3);
@@ -59,8 +59,6 @@ public class ServiceFilterExperiment {
 		System.out.println("Service rate as is " + serviceRate);
 		System.out.println("Service rate x" + cores + " is: "+ (serviceRate)*cores);
 		
-		System.out.println("sla: " + sla);
-		
 		System.out.println("Service time 50th " + serviceTime50);
 		System.out.println("Service time 95th " + serviceTime95);
 		System.out.println("Service time 99th " + serviceTime99);
@@ -73,8 +71,11 @@ public class ServiceFilterExperiment {
 
 		// add experiment outputs
 		ExperimentOutput experimentOutput = new ExperimentOutput();
-		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, 5000);
-		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, 5000);
+//		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, 5000);
+//		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, 5000);
+		int warmingUp = 6000 * nServers;
+		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, warmingUp);
+		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, warmingUp);
 		
 		experimentOutput.setJobCollector(nServers);
 		
@@ -93,19 +94,10 @@ public class ServiceFilterExperiment {
 			dataCenter.addServer(server);
 		}//End for i
 		
-		long maxSize = 1000;
-//		double sla = 0.0200;//ms
-		int warmingUpNum = 5000;
-		ServiceTimeFilter serviceTimeFilter = new ServiceTimeFilter(maxSize, sla, warmingUpNum);
-		
-		experimentInput.setServiceTimeFilter(serviceTimeFilter);
 		experimentInput.setDataCenter(dataCenter);
 		experimentInput.setWorkType(WorkType.SPECULATE);
-		experimentInput.setFilterType(FilterType.ServiceFilter);
+		experimentInput.setFilterType(FilterType.None);
 
-		SurvivorGenerator survivorGenerator = new SurvivorGenerator();
-		experimentInput.setSurvivorGenerator(survivorGenerator);
-		
 //		int orderOfMag = 8;
 		int orderOfMag = 9;
 		int printSamples = (int) Math.pow(10, orderOfMag);
@@ -133,15 +125,6 @@ public class ServiceFilterExperiment {
 		double waitingTime999th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.999);
 		System.out.println("Waiting 999: " + waitingTime999th);
 		
-		long filteredJobs = experiment.getJobCollector().getFilteredNum();
-		System.out.println("Filtered Jobs: " + filteredJobs);
-		long finishedJobs = experiment.getJobCollector().getFinishedNum();
-		System.out.println("Finished Jobs: " + finishedJobs);
-		double savedPortion = (double) filteredJobs / (double) (filteredJobs + finishedJobs);
-		System.out.println("savedPortion: " + savedPortion);
-
-		System.out.println("Moving Average: " + experiment.getServieTimeFilter().getMovingAverage());
-		
 		System.out.println("############ Response time CDF ##############");
 		experiment.getStats().getStat(StatName.SOJOURN_TIME).printCdf();
 		System.out.println("############ Response time Histogram ##############");
@@ -156,14 +139,12 @@ public class ServiceFilterExperiment {
 	
 	public static void main(String[] args) {
 		double targetRho = Double.valueOf(args[3]);
-		double pruning = Double.valueOf(args[4]);
-		System.out.println("===== Service Filter Experiment =====");
+		System.out.println("===== Clones Experiment =====");
 		System.out.println("workload: " + args[1]);
 		System.out.println("worker numbers: " + args[2]);
-		System.out.println("rho: " + targetRho);
-		System.out.println("pruning: " + pruning);
+		System.out.println("targetRho: " + targetRho);
 		System.out.println("========================================");
-		ServiceFilterExperiment exp  = new ServiceFilterExperiment();
-		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,pruning);
+		ClonesExperiment exp  = new ClonesExperiment();
+		exp.run(args[0],args[1],Integer.valueOf(args[2]), targetRho);
 	}
 }

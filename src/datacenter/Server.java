@@ -40,6 +40,7 @@ import sawt.SurvivorGenerator;
 import stat.Statistic;
 import stat.TimeWeightedStatistic;
 import core.Constants;
+import core.Constants.FilterType;
 import core.Experiment;
 import core.Job;
 import core.JobArrivalEvent;
@@ -239,7 +240,10 @@ public class Server implements Powerable, Serializable {
 
 //        Job job = new Job(serviceTime);
         Job job = new Job(serviceTime, this.assignJobId());
-        SurvivorGenerator.generate(job, this);
+        if(this.getExperiment().getFilterType() == FilterType.ServiceFilter ||
+        		this.getExperiment().getFilterType() == FilterType.ServiceAndWaitFilter) {
+        	this.getExperiment().getSurvivorGenerator().generate(job, this);
+        }
         JobArrivalEvent jobArrivalEvent
                 = new JobArrivalEvent(arrivalTime,
                                       experiment,
@@ -267,6 +271,10 @@ public class Server implements Powerable, Serializable {
      * @param job - the job that is inserted
      */
     public void insertJob(final double time, final Job job) {
+    	
+    	// move to first
+    	this.jobsInServerInvariant++;
+    	
         // Check if the job should be serviced now or put in the queue
         if (this.getRemainingCapacity() == 0) {
             // There was no room in the server, put it in the queue
@@ -277,7 +285,7 @@ public class Server implements Powerable, Serializable {
         }
 
         // Job has entered the system
-        this.jobsInServerInvariant++;
+//        this.jobsInServerInvariant++;
         checkInvariants();
     }
 
@@ -436,8 +444,11 @@ public class Server implements Powerable, Serializable {
         }
 
         job.markStart(time);
-        targetSocket.insertJob(time, job);
+//        targetSocket.insertJob(time, job);
         this.jobToSocketMap.put(job, targetSocket);
+        
+        // move to last
+        targetSocket.insertJob(time, job);
     }
 
     /**
@@ -457,6 +468,9 @@ public class Server implements Powerable, Serializable {
             Sim.fatalError("Job to Socket mapping failed");
         }
 
+        // move to first
+        this.jobsInServerInvariant--;
+        
         // See if we're going to schedule another job or if it can go to sleep
         boolean jobWaiting = !this.queue.isEmpty();
 
@@ -470,7 +484,7 @@ public class Server implements Powerable, Serializable {
         }
 
         // Job has left the systems
-        this.jobsInServerInvariant--;
+//        this.jobsInServerInvariant--;
         this.checkInvariants();
     }
 

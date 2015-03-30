@@ -8,16 +8,28 @@ public class ServiceTimeFilter extends Filter {
 	
 	private double sumService;
 	
-	private double sla;
+	private final double sla;
 	
-	public ServiceTimeFilter(final long size, final double sla) {
+	private int warmingUpNum;
+	
+	private int currentNum;
+	
+	public ServiceTimeFilter(final long size, final double sla, final int warmingUpNum) {
 		super(size);
 		this.movingAverage = 0;
 		this.sumService = 0;
 		this.sla = sla;
+		this.warmingUpNum = warmingUpNum;
+		this.currentNum = 0;
 	}
 
-	public void addSample(final double serviceTime) {
+	public void addSample(final Job job) {
+//		if(job.isSurvivor())
+//			return;
+		if(this.currentNum < this.warmingUpNum) {
+			this.currentNum++;
+		}
+		double serviceTime = job.getSize();
 		double oldestTime = this.updateQueue(serviceTime); 
 		this.sumService = this.sumService - oldestTime + serviceTime;
 		this.movingAverage = this.sumService / this.getCurrentSize();
@@ -28,7 +40,7 @@ public class ServiceTimeFilter extends Filter {
 	}
 	
 	public boolean predictValid(Job job) {
-		if(job.isSurvivor())
+		if(job.isSurvivor() || this.currentNum < this.warmingUpNum)
 			return true;
 		double waitingTime = job.getStartTime() - job.getArrivalTime();
 		double predictResponse = waitingTime + this.movingAverage;

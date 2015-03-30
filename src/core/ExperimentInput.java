@@ -34,6 +34,8 @@ package core;
 import java.io.Serializable;
 
 import sawt.ServiceTimeFilter;
+import sawt.SurvivorGenerator;
+import core.Constants.FilterType;
 import core.Constants.WorkType;
 import datacenter.DataCenter;
 
@@ -63,6 +65,13 @@ public final class ExperimentInput implements Serializable {
      * 
      */
     private ServiceTimeFilter serviceTimeFilter;
+    
+    /**
+     * 
+     */
+    private FilterType filterType;
+    
+    private SurvivorGenerator survivorGenerator;
 
     /**
      * Creates a new ExperimentInput.
@@ -103,5 +112,21 @@ public final class ExperimentInput implements Serializable {
     
     public ServiceTimeFilter getServiceTimeFilter() {
     	return this.serviceTimeFilter;
+    }
+    
+    public void setFilterType(final FilterType filterType) {
+    	this.filterType = filterType;
+    }
+    
+    public FilterType getFilterType() {
+    	return this.filterType;
+    }
+    
+    public void setSurvivorGenerator(SurvivorGenerator survivorGenerator) {
+    	this.survivorGenerator = survivorGenerator;
+    }
+    
+    public SurvivorGenerator getSurvivorGenerator() {
+    	return this.survivorGenerator;
     }
 }

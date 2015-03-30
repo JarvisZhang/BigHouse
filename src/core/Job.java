@@ -89,6 +89,8 @@ public class Job {
      * 
      */
     private boolean isSurvivor;
+    
+    private boolean firstFinished;
 
 //    /**
 //     *
@@ -333,6 +335,14 @@ public class Job {
     
     public final boolean isSurvivor() {
     	return this.isSurvivor;
+    }
+    
+    public final void setFirstFinished(boolean firstFinished) {
+    	this.firstFinished = firstFinished;
+    }
+    
+    public final boolean getFirstFinished() {
+    	return this.firstFinished;
     }
 
 }
