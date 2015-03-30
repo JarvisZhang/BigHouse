@@ -99,40 +99,30 @@
 
     <!-- Create the jar files -->
     <target name="create_run_jar" depends="compile">
-        <jar destfile="master.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="clones_nrho_nserver.jar">
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="master.Master"/>
+                <attribute name="Main-Class" value="sawt.ClonesExperiment"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
             <zipfileset excludes="META-INF/*.SF" src="/usr/local/Cellar/ant/1.9.4/libexec/lib/ant-junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="ssj.jar"/>
         </jar>
-        <jar destfile="slave.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="clonesCollectAll_nrho_nserver.jar">
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="slave.Slave"/>
+                <attribute name="Main-Class" value="sawt.ClonesCollectAllExperiment"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
             <zipfileset excludes="META-INF/*.SF" src="/usr/local/Cellar/ant/1.9.4/libexec/lib/ant-junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="ssj.jar"/>
         </jar>
-        <jar destfile="powercap.jar">
+        <jar destfile="serviceFilter_nrho_nserver_nprune.jar">
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="experiment.PowerCappingExperiment"/>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/usr/local/Cellar/ant/1.9.4/libexec/lib/ant-junit.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="ssj.jar"/>
-        </jar>
-        <jar destfile="unlimitedmachine.jar">
-            <manifest>
-                <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="sawt.UnlimitedMachine"/>
+                <attribute name="Main-Class" value="sawt.ServiceFilterExperiment"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
