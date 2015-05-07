@@ -18,7 +18,7 @@ public class ServiceFilterExperiment {
 		
 	}
 
-	public void run(String workloadDir, String workload, int nServers, double targetRho, double sla) {
+	public void run(String workloadDir, String workload, int nServers, double targetRho, double sla, int survivorNum, int printSamples, int seed) {
 
 		// service file
 		String arrivalFile = workloadDir+"workloads/"+workload+".arrival.cdf";
@@ -28,6 +28,8 @@ public class ServiceFilterExperiment {
 		int cores = 4;
 		int sockets = 1;
 //		double targetRho = .75;
+		
+		double scaledByServer = (double) nServers / (double) survivorNum;
 		
 //		EmpiricalDistribution arrivalDistribution = EmpiricalDistribution.loadDistribution(arrivalFile, 1e-3);
 //		EmpiricalDistribution serviceDistribution = EmpiricalDistribution.loadDistribution(serviceFile, 1e-3);
@@ -87,7 +89,7 @@ public class ServiceFilterExperiment {
 		for(int i = 0; i < nServers; i++) {
 			MTRandom arrivalRand = new MTRandom(1);
 			EmpiricalGenerator arrivalGenerator  = new EmpiricalGenerator(arrivalRand, arrivalDistribution, "arrival", arrivalScale);
-			MTRandom serviceRand = new MTRandom(2 + i);
+			MTRandom serviceRand = new MTRandom(seed + i);
 			EmpiricalGenerator serviceGenerator  = new EmpiricalGenerator(serviceRand, serviceDistribution, "service" + i, 1.0);
 			Server server = new Server(sockets, cores, experiment, arrivalGenerator, serviceGenerator);
 			dataCenter.addServer(server);
@@ -103,12 +105,11 @@ public class ServiceFilterExperiment {
 		experimentInput.setWorkType(WorkType.SPECULATE);
 		experimentInput.setFilterType(FilterType.ServiceFilter);
 
-		SurvivorGenerator survivorGenerator = new SurvivorGenerator();
+		SurvivorGenerator survivorGenerator = new SurvivorGenerator(survivorNum);
 		experimentInput.setSurvivorGenerator(survivorGenerator);
 		
 //		int orderOfMag = 8;
-		int orderOfMag = 9;
-		int printSamples = (int) Math.pow(10, orderOfMag);
+//		int printSamples = (int) Math.pow(10, orderOfMag);
 		experiment.setEventLimit(printSamples);
 		
 		// run the experiment
@@ -142,28 +143,34 @@ public class ServiceFilterExperiment {
 
 		System.out.println("Moving Average: " + experiment.getServieTimeFilter().getMovingAverage());
 		
-		System.out.println("############ Response time CDF ##############");
-		experiment.getStats().getStat(StatName.SOJOURN_TIME).printCdf();
-		System.out.println("############ Response time Histogram ##############");
-		experiment.getStats().getStat(StatName.SOJOURN_TIME).printHistogram();
-		System.out.println("############ Waiting time CDF ##############");
-		experiment.getStats().getStat(StatName.WAIT_TIME).printCdf();
-		System.out.println("############ Waiting time Histogram ##############");
-		experiment.getStats().getStat(StatName.WAIT_TIME).printHistogram();
-		
+//		System.out.println("############ Response time CDF ##############");
+//		experiment.getStats().getStat(StatName.SOJOURN_TIME).printCdf();
+//		System.out.println("############ Response time Histogram ##############");
+//		experiment.getStats().getStat(StatName.SOJOURN_TIME).printHistogram();
+//		System.out.println("############ Waiting time CDF ##############");
+//		experiment.getStats().getStat(StatName.WAIT_TIME).printCdf();
+//		System.out.println("############ Waiting time Histogram ##############");
+//		experiment.getStats().getStat(StatName.WAIT_TIME).printHistogram();
+//		
 //		experiment.getJobCollector().printAllSample();
 	}//End run()
 	
 	public static void main(String[] args) {
 		double targetRho = Double.valueOf(args[3]);
-		double pruning = Double.valueOf(args[4]);
+		double pruning = Double.valueOf(args[4]) / 1000;
+		int survivorNum = Integer.valueOf(args[5]);
+		int orderOfMag = Integer.valueOf(args[6]);
+		int seed = Integer.valueOf(args[7]);
 		System.out.println("===== Service Filter Experiment =====");
 		System.out.println("workload: " + args[1]);
 		System.out.println("worker numbers: " + args[2]);
 		System.out.println("rho: " + targetRho);
 		System.out.println("pruning: " + pruning);
+		System.out.println("survivor numbers: " + survivorNum);
+		System.out.println("order of magtitude: " + orderOfMag);
+		System.out.println("random seed: " + seed);
 		System.out.println("========================================");
 		ServiceFilterExperiment exp  = new ServiceFilterExperiment();
-		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,pruning);
+		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,pruning,survivorNum,orderOfMag,seed);
 	}
 }

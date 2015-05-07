@@ -35,12 +35,15 @@ import generator.Generator;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Vector;
 
+import sawt.RandomInfo;
 import sawt.SurvivorGenerator;
 import stat.Statistic;
 import stat.TimeWeightedStatistic;
 import core.Constants;
 import core.Constants.FilterType;
+import core.Constants.WorkType;
 import core.Experiment;
 import core.Job;
 import core.JobArrivalEvent;
@@ -130,12 +133,12 @@ public class Server implements Powerable, Serializable {
     /**
      * 
      */
-    private long serverId;
+    private int serverId;
     
     /**
      * 
      */
-    private static long currentId = 0;
+    private static int currentId = 0;
     
     /**
      * 
@@ -175,8 +178,8 @@ public class Server implements Powerable, Serializable {
      * 
      * @return
      */
-    private long assignId() {
-    	long toReturn = Server.currentId;
+    private int assignId() {
+    	int toReturn = Server.currentId;
     	Server.currentId++;
     	return toReturn;
     }
@@ -193,7 +196,7 @@ public class Server implements Powerable, Serializable {
     /**
      * 
      */
-    public final long getServerId() {
+    public final int getServerId() {
     	return this.serverId;
     }
 
@@ -240,10 +243,23 @@ public class Server implements Powerable, Serializable {
 
 //        Job job = new Job(serviceTime);
         Job job = new Job(serviceTime, this.assignJobId());
-        if(this.getExperiment().getFilterType() == FilterType.ServiceFilter ||
-        		this.getExperiment().getFilterType() == FilterType.ServiceAndWaitFilter) {
-        	this.getExperiment().getSurvivorGenerator().generate(job, this);
+        
+        Vector<FilterType> filterTypes = this.getExperiment().getFilterTypes();
+        
+        RandomInfo randomInfo = null;
+        if(filterTypes.contains(FilterType.RANDOM_N)) {
+        	randomInfo = this.getExperiment().getRandomNGenerator().generate(job, this);
         }
+        
+        if(filterTypes.contains(FilterType.ServiceFilter)) {
+        	if(randomInfo == null) {
+        		this.getExperiment().getSurvivorGenerator().generate(job, this);
+        	}
+        	else {
+				this.getExperiment().getSurvivorGenerator().generate(job, this, randomInfo.getRandomSerVector());
+			}
+        }
+        
         JobArrivalEvent jobArrivalEvent
                 = new JobArrivalEvent(arrivalTime,
                                       experiment,

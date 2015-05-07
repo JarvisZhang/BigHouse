@@ -122,8 +122,7 @@ public final class JobFinishEvent extends JobEvent {
 
         this.server.removeJob(this.getTime(), this.getJob());
         
-        if(this.server.getExperiment().getFilterType() == FilterType.ServiceFilter ||
-        		this.server.getExperiment().getFilterType() == FilterType.ServiceAndWaitFilter) {
+        if(this.server.getExperiment().containFilterType(FilterType.ServiceFilter)) {
 	        // Update service time filter
 	        ServiceTimeFilter serviceTimeFilter = this.getExperiment().getServieTimeFilter();
 	        serviceTimeFilter.addSample(this.getJob());

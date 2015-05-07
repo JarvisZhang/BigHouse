@@ -1,5 +1,7 @@
 package sawt;
 
+import java.util.Random;
+
 import core.Job;
 
 public class ServiceTimeFilter extends Filter {
@@ -13,6 +15,8 @@ public class ServiceTimeFilter extends Filter {
 	private int warmingUpNum;
 	
 	private int currentNum;
+	
+	private static Random random = new Random();
 	
 	public ServiceTimeFilter(final long size, final double sla, final int warmingUpNum) {
 		super(size);
@@ -46,4 +50,23 @@ public class ServiceTimeFilter extends Filter {
 		double predictResponse = waitingTime + this.movingAverage;
 		return predictResponse <= this.sla;
 	}
+	
+//	public boolean isValid(Job job, int filterPercent) {
+//		if(job.isSurvivor() || this.currentNum < this.warmingUpNum)
+//			return true;
+//		double waitingTime = job.getStartTime() - job.getArrivalTime();
+//		double response = waitingTime + job.getSize();
+//		if(response <= this.sla) {
+//			return true;
+//		}
+//		else {
+//			int randomResult = random.nextInt(filterPercent);
+//			if(randomResult == 0) {
+//				return true;
+//			}
+//			else {
+//				return false;
+//			}
+//		}
+//	}
 }

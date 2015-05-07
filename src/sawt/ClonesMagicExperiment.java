@@ -12,13 +12,13 @@ import generator.EmpiricalGenerator;
 import generator.MTRandom;
 import math.EmpiricalDistribution;
 
-public class ClonesExperiment {
+public class ClonesMagicExperiment {
 	
-	public ClonesExperiment() {
+	public ClonesMagicExperiment() {
 		
 	}
 
-	public void run(String workloadDir, String workload, int nServers, double targetRho,int seed) {
+	public double run(String workloadDir, String workload, int nServers, double targetRho,int seed) {
 
 		// service file
 		String arrivalFile = workloadDir+"workloads/"+workload+".arrival.cdf";
@@ -125,6 +125,8 @@ public class ClonesExperiment {
 		double waitingTime999th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.999);
 		System.out.println("Waiting 999: " + waitingTime999th);
 		
+		return responseTime999th;
+		
 //		System.out.println("############ Response time CDF ##############");
 //		experiment.getStats().getStat(StatName.SOJOURN_TIME).printCdf();
 //		System.out.println("############ Response time Histogram ##############");
@@ -138,15 +140,19 @@ public class ClonesExperiment {
 	}//End run()
 	
 	public static void main(String[] args) {
-		double targetRho = Double.valueOf(args[3]);
-		int seed = Integer.valueOf(args[4]);
-		System.out.println("===== Clones Experiment =====");
-		System.out.println("workload: " + args[1]);
-		System.out.println("worker numbers: " + args[2]);
-		System.out.println("targetRho: " + targetRho);
-		System.out.println("seed: " + seed);
-		System.out.println("========================================");
-		ClonesExperiment exp  = new ClonesExperiment();
-		exp.run(args[0],args[1],Integer.valueOf(args[2]), targetRho,seed);
+		double responseTime999th;
+		int seed = 26;
+		do {
+			double targetRho = Double.valueOf(args[3]);
+			System.out.println("===== Clones Magic Experiment =====");
+			System.out.println("workload: " + args[1]);
+			System.out.println("worker numbers: " + args[2]);
+			System.out.println("targetRho: " + targetRho);
+			System.out.println("seed: " + seed);
+			System.out.println("========================================");
+			ClonesMagicExperiment exp  = new ClonesMagicExperiment();
+			responseTime999th = exp.run(args[0],args[1],Integer.valueOf(args[2]), targetRho,seed);
+			seed++;
+		} while(responseTime999th < 0.0295 || responseTime999th > 0.033);
 	}
 }

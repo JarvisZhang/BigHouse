@@ -32,7 +32,9 @@
 package core;
 
 import java.io.Serializable;
+import java.util.Vector;
 
+import sawt.RandomNGenerator;
 import sawt.ServiceTimeFilter;
 import sawt.SurvivorGenerator;
 import core.Constants.FilterType;
@@ -69,14 +71,17 @@ public final class ExperimentInput implements Serializable {
     /**
      * 
      */
-    private FilterType filterType;
+    private Vector<FilterType> filterTypes;
     
     private SurvivorGenerator survivorGenerator;
+    
+    private RandomNGenerator randomNGenerator;
 
     /**
      * Creates a new ExperimentInput.
      */
     public ExperimentInput() {
+    	this.filterTypes = new Vector<FilterType>();
     }
 
     /**
@@ -115,11 +120,15 @@ public final class ExperimentInput implements Serializable {
     }
     
     public void setFilterType(final FilterType filterType) {
-    	this.filterType = filterType;
+    	this.filterTypes.add(filterType);
     }
     
-    public FilterType getFilterType() {
-    	return this.filterType;
+    public Vector<FilterType> getFilterTypes() {
+    	return this.filterTypes;
+    }
+    
+    public boolean containsFilterType(final FilterType filterType) {
+    	return this.filterTypes.contains(filterType);
     }
     
     public void setSurvivorGenerator(SurvivorGenerator survivorGenerator) {
@@ -128,5 +137,13 @@ public final class ExperimentInput implements Serializable {
     
     public SurvivorGenerator getSurvivorGenerator() {
     	return this.survivorGenerator;
+    }
+    
+    public void setRandomNGenerator(RandomNGenerator randomNGenerator) {
+    	this.randomNGenerator = randomNGenerator;
+    }
+    
+    public RandomNGenerator getRandomNGenerator() {
+    	return this.randomNGenerator;
     }
 }

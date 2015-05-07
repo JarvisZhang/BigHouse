@@ -90,6 +90,8 @@ public class Job {
      */
     private boolean isSurvivor;
     
+    private boolean randomValid;
+    
     private boolean firstFinished;
 
 //    /**
@@ -344,5 +346,12 @@ public class Job {
     public final boolean getFirstFinished() {
     	return this.firstFinished;
     }
+    
+    public final void setRandomValid(boolean randomValid) {
+    	this.randomValid = randomValid;
+    }
 
+    public final boolean getRandomValid() {
+    	return this.randomValid;
+    }
 }

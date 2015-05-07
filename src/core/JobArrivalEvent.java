@@ -70,8 +70,6 @@ public final class JobArrivalEvent extends JobEvent {
      * Has the job arrive at a server.
      */
     public void process() {
-//    	if((this.server.getServerId() == 6 || this.server.getServerId() == 7) && this.getJob().getJobId() == 206)
-//    		System.out.println();
         this.server.createNewArrival(this.getTime());
         this.getJob().markArrival(this.getTime());
         this.server.insertJob(this.getTime(), this.getJob());

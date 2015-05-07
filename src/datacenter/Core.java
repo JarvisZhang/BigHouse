@@ -32,6 +32,7 @@
 package datacenter;
 
 import java.io.Serializable;
+import java.util.Vector;
 
 import sawt.ServiceTimeFilter;
 import core.Constants.FilterType;
@@ -231,8 +232,19 @@ public final class Core implements Powerable, Serializable {
             // Core now goes into full power state
             this.powerState = PowerState.ACTIVE;
             
-            if(this.experiment.getFilterType() == FilterType.ServiceFilter || 
-            		this.experiment.getFilterType() == FilterType.ServiceAndWaitFilter) {
+            Vector<FilterType> filterTypes = this.experiment.getFilterTypes();
+            
+            if(filterTypes.contains(FilterType.RANDOM_N)) {
+            	if(!aJob.getRandomValid()) {
+            		this.experiment.getJobCollector().returnToMaster(aJob);
+//            		this.experiment.getJobCollector().updateFilteredNum();
+            		this.socket.getServer().removeJob(time, aJob);
+            		return;
+            	}
+//            	this.experiment.getJobCollector().updateFinishedNum();
+            }
+            
+            if(filterTypes.contains(FilterType.ServiceFilter)) {
 	            // Add serviceTimeFilter
 	            ServiceTimeFilter serviceTimeFilter = server.getExperiment().getServieTimeFilter();
 	            if(serviceTimeFilter != null) {

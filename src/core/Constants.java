@@ -99,9 +99,7 @@ public final class Constants {
     	
     	DEFAULT,
     	
-    	SPECULATE,
-    	
-    	RANDOM_1
+    	SPECULATE
     }
     
     /**
@@ -113,7 +111,7 @@ public final class Constants {
     	
     	ServiceFilter,
     	
-    	ServiceAndWaitFilter
+    	RANDOM_N
     }
 
     /* Power breakdown for servers. */

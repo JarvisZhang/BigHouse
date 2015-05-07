@@ -1,6 +1,6 @@
 package sawt;
 
-import java.util.Random;
+import java.util.Vector;
 
 import core.Job;
 import datacenter.Server;
@@ -9,22 +9,35 @@ public class Survivor {
 	
 	private long jobId;
 	
-	private int serverId;
+	private Vector<Integer> survivorServerVec;
 	
 	private int count;
 	
-	public Survivor(final Job job, final Server server) {
+	public Survivor(final Job job, final Server server, final int survivorNum) {
 		this.jobId = job.getJobId();
-		this.count = server.getExperiment().getServerNumber();
-		this.serverId = this.assignServerId(this.count);
+		int serverNum = server.getExperiment().getServerNumber();
+		this.count = serverNum;
+		this.survivorServerVec = ReservoirSampling.generate(survivorNum, serverNum);
+	}
+	
+	public Survivor(final Job job, final Server server, final int survivorNum, final Vector<Integer> serverVec) {
+		this.jobId = job.getJobId();
+		int serverNum = serverVec.size();
+		this.count = serverNum;
+		Vector<Integer> sampleVector = ReservoirSampling.generate(survivorNum, serverNum);
+		this.survivorServerVec = new Vector<Integer>();
+		for(int sample : sampleVector) {
+			this.survivorServerVec.add(serverVec.get(sample));
+		}
+		 
 	}
 	
 	public long getJobId() {
 		return this.jobId;
 	}
 	
-	public long getServerId() {
-		return this.serverId;
+	public boolean containsServerId(int serverId) {
+		return this.survivorServerVec.contains(serverId);
 	}
 	
 	public void updateCount() {
@@ -33,10 +46,5 @@ public class Survivor {
 	
 	public boolean isEmpty() {
 		return this.count == 0;
-	}
-
-	private int assignServerId(final int serverNum) {
-		Random rand = new Random();
-		return rand.nextInt(serverNum);
 	}
 }

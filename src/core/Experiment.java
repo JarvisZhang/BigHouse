@@ -41,6 +41,7 @@ import java.util.Vector;
 import core.Constants.FilterType;
 import core.Constants.WorkType;
 import sawt.JobCollector;
+import sawt.RandomNGenerator;
 import sawt.ServiceTimeFilter;
 import sawt.SurvivorGenerator;
 import stat.Statistic;
@@ -341,11 +342,19 @@ public final class Experiment implements Serializable, Cloneable {
     	return this.getInput().getServiceTimeFilter();
     }
     
-    public FilterType getFilterType() {
-    	return this.getInput().getFilterType();
+    public Vector<FilterType> getFilterTypes() {
+    	return this.getInput().getFilterTypes();
+    }
+    
+    public boolean containFilterType(final FilterType filterType) {
+    	return this.getInput().containsFilterType(filterType);
     }
     
     public SurvivorGenerator getSurvivorGenerator() {
     	return this.getInput().getSurvivorGenerator();
+    }
+    
+    public RandomNGenerator getRandomNGenerator() {
+    	return this.getInput().getRandomNGenerator();
     }
 }

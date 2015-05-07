@@ -39,14 +39,9 @@ import core.ExperimentInput;
 import core.ExperimentOutput;
 import core.Constants.FilterType;
 import core.Constants.StatName;
-import core.Constants.TimeWeightedStatName;
 import core.Constants.WorkType;
 import datacenter.DataCenter;
-import datacenter.PowerCappingEnforcer;
 import datacenter.Server;
-import datacenter.PowerNapServer;
-import datacenter.Core.CorePowerPolicy;
-import datacenter.Socket.SocketPowerPolicy;
 
 public class Random1Experiment {
 
