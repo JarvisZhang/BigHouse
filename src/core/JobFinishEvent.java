@@ -33,8 +33,8 @@ package core;
 
 import core.Constants.FilterType;
 import core.Constants.WorkType;
-import sawt.JobCollector;
-import sawt.ServiceTimeFilter;
+import squeezer.JobCollector;
+import squeezer.ServiceTimeFilter;
 import stat.Statistic;
 import datacenter.Server;
 

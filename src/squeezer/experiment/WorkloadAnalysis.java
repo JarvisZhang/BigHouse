@@ -1,4 +1,4 @@
-package sawt;
+package squeezer.experiment;
 
 import math.EmpiricalDistribution;
 

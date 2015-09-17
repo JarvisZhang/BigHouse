@@ -1,5 +1,7 @@
-package sawt;
+package squeezer.experiment;
 
+import squeezer.ServiceTimeFilter;
+import squeezer.SurvivorGenerator;
 import core.Constants.FilterType;
 import core.Constants.WorkType;
 import core.Experiment;
@@ -12,13 +14,13 @@ import generator.EmpiricalGenerator;
 import generator.MTRandom;
 import math.EmpiricalDistribution;
 
-public class RNSFExperiment {
+public class ServiceFilterExperiment {
 	
-	public RNSFExperiment() {
+	public ServiceFilterExperiment() {
 		
 	}
 
-	public void run(String workloadDir, String workload, int nServers, double targetRho, int randomNum, double sla, int survivorNum, int printSamples, int seed) {
+	public void run(String workloadDir, String workload, int nServers, double targetRho, double sla, int survivorNum, int printSamples, int seed) {
 
 		// service file
 		String arrivalFile = workloadDir+"workloads/"+workload+".arrival.cdf";
@@ -98,15 +100,11 @@ public class RNSFExperiment {
 		long maxSize = 1000;
 //		double sla = 0.0200;//ms
 		int warmingUpNum = 5000;
-		
 		ServiceTimeFilter serviceTimeFilter = new ServiceTimeFilter(maxSize, sla, warmingUpNum);
-		RandomNGenerator randomNGenerator = new RandomNGenerator(randomNum);
 		
-		experimentInput.setRandomNGenerator(randomNGenerator);
 		experimentInput.setServiceTimeFilter(serviceTimeFilter);
 		experimentInput.setDataCenter(dataCenter);
 		experimentInput.setWorkType(WorkType.SPECULATE);
-		experimentInput.setFilterType(FilterType.RANDOM_N);
 		experimentInput.setFilterType(FilterType.ServiceFilter);
 
 		SurvivorGenerator survivorGenerator = new SurvivorGenerator(survivorNum);
@@ -155,28 +153,26 @@ public class RNSFExperiment {
 //		experiment.getStats().getStat(StatName.WAIT_TIME).printCdf();
 //		System.out.println("############ Waiting time Histogram ##############");
 //		experiment.getStats().getStat(StatName.WAIT_TIME).printHistogram();
-		
+//		
 //		experiment.getJobCollector().printAllSample();
 	}//End run()
 	
 	public static void main(String[] args) {
 		double targetRho = Double.valueOf(args[3]);
-		int randomNum = Integer.valueOf(args[4]);
-		double pruning = Double.valueOf(args[5]) / 1000;
-		int survivorNum = Integer.valueOf(args[6]);
-		int orderOfMag = Integer.valueOf(args[7]);
-		int seed = Integer.valueOf(args[8]);
-		System.out.println("===== Random N Service Filter Experiment =====");
+		double pruning = Double.valueOf(args[4]) / 1000;
+		int survivorNum = Integer.valueOf(args[5]);
+		int orderOfMag = Integer.valueOf(args[6]);
+		int seed = Integer.valueOf(args[7]);
+		System.out.println("===== Service Filter Experiment =====");
 		System.out.println("workload: " + args[1]);
 		System.out.println("worker numbers: " + args[2]);
 		System.out.println("rho: " + targetRho);
-		System.out.println("random numbers: " + randomNum);
 		System.out.println("pruning: " + pruning);
 		System.out.println("survivor numbers: " + survivorNum);
 		System.out.println("order of magtitude: " + orderOfMag);
 		System.out.println("random seed: " + seed);
 		System.out.println("========================================");
-		RNSFExperiment exp  = new RNSFExperiment();
-		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,randomNum,pruning,survivorNum,orderOfMag,seed);
+		ServiceFilterExperiment exp  = new ServiceFilterExperiment();
+		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,pruning,survivorNum,orderOfMag,seed);
 	}
 }

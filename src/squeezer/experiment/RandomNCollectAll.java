@@ -29,8 +29,9 @@
  *
  */
 
-package sawt;
+package squeezer.experiment;
 
+import squeezer.RandomNGenerator;
 import generator.EmpiricalGenerator;
 import generator.MTRandom;
 import math.EmpiricalDistribution;
@@ -43,13 +44,13 @@ import core.Constants.WorkType;
 import datacenter.DataCenter;
 import datacenter.Server;
 
-public class RandomNExperiment {
+public class RandomNCollectAll {
 
-	public RandomNExperiment(){
+	public RandomNCollectAll(){
 
 	}
 	
-	public void run(String workloadDir, String workload, int nServers, double targetRho, int randomNum, int printSamples, int seed) {
+	public void run(String workloadDir, String workload, int nServers, double targetRho, int randomNum, double sla, int printSamples, int seed) {
 
 		// service file
 		String arrivalFile = workloadDir+"workloads/"+workload+".arrival.cdf";
@@ -118,7 +119,7 @@ public class RandomNExperiment {
 		experimentInput.setRandomNGenerator(randomNGenerator);
 		
 		experimentInput.setDataCenter(dataCenter);
-		experimentInput.setWorkType(WorkType.SPECULATE);
+		experimentInput.setWorkType(WorkType.DEFAULT);
 		experimentInput.setFilterType(FilterType.RANDOM_N);
 		
 //		int orderOfMag = 8;
@@ -148,6 +149,17 @@ public class RandomNExperiment {
 		double waitingTime999th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.999);
 		System.out.println("Waiting 999: " + waitingTime999th);
 		
+		try {
+			double responseSlaQuantile = experiment.getStats().getStat(StatName.WAIT_TIME).getCdfValue(sla);
+			System.out.println("Waiting < " + sla + ": " + responseSlaQuantile);
+			double responsePredictValue = sla - averageServiceTime;
+			double responsePredictQuantile = experiment.getStats().getStat(StatName.WAIT_TIME).getCdfValue(responsePredictValue);
+			System.out.println("Waiting < " + responsePredictValue + ": " + responsePredictQuantile);
+		}
+		catch(Exception e) {
+			
+		}
+		
 		System.out.println("############ Response time CDF ##############");
 		experiment.getStats().getStat(StatName.SOJOURN_TIME).printCdf();
 		System.out.println("############ Response time Histogram ##############");
@@ -162,18 +174,20 @@ public class RandomNExperiment {
 	public static void main(String[] args) {
 		double targetRho = Double.valueOf(args[3]);
 		int randomNum = Integer.valueOf(args[4]);
-		int orderOfMag = Integer.valueOf(args[5]);
-		int seed = Integer.valueOf(args[6]);
+		double sla = Double.valueOf(args[5]);
+		int orderOfMag = Integer.valueOf(args[6]);
+		int seed = Integer.valueOf(args[7]);
 		System.out.println("===== Random N Experiment =====");
 		System.out.println("workload: " + args[1]);
 		System.out.println("worker numbers: " + args[2]);
 		System.out.println("rho: " + targetRho);
 		System.out.println("random numbers: " + randomNum);
+		System.out.println("sla: " + sla);
 		System.out.println("order of magtitude: " + orderOfMag);
 		System.out.println("random seed: " + seed);
 		System.out.println("========================================");
-		RandomNExperiment exp  = new RandomNExperiment();
-		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,randomNum,orderOfMag,seed);
+		RandomNCollectAll exp  = new RandomNCollectAll();
+		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,randomNum,sla,orderOfMag,seed);
 	}
 	
 }//End Random1Experimen

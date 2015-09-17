@@ -34,9 +34,9 @@ package core;
 import java.io.Serializable;
 import java.util.Vector;
 
-import sawt.RandomNGenerator;
-import sawt.ServiceTimeFilter;
-import sawt.SurvivorGenerator;
+import squeezer.RandomNGenerator;
+import squeezer.ServiceTimeFilter;
+import squeezer.SurvivorGenerator;
 import core.Constants.FilterType;
 import core.Constants.WorkType;
 import datacenter.DataCenter;

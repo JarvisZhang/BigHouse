@@ -1,5 +1,8 @@
-package sawt;
+package squeezer.experiment;
 
+import squeezer.RandomNGenerator;
+import squeezer.ServiceTimeFilter;
+import squeezer.SurvivorGenerator;
 import core.Constants.FilterType;
 import core.Constants.WorkType;
 import core.Experiment;
@@ -12,13 +15,13 @@ import generator.EmpiricalGenerator;
 import generator.MTRandom;
 import math.EmpiricalDistribution;
 
-public class ClonesMagicExperiment {
+public class RNSFExperiment {
 	
-	public ClonesMagicExperiment() {
+	public RNSFExperiment() {
 		
 	}
 
-	public double run(String workloadDir, String workload, int nServers, double targetRho,int seed) {
+	public void run(String workloadDir, String workload, int nServers, double targetRho, int randomNum, double sla, int survivorNum, int printSamples, int seed) {
 
 		// service file
 		String arrivalFile = workloadDir+"workloads/"+workload+".arrival.cdf";
@@ -27,7 +30,9 @@ public class ClonesMagicExperiment {
 		// specify distribution
 		int cores = 4;
 		int sockets = 1;
-//		double targetRho = .9;
+//		double targetRho = .75;
+		
+		double scaledByServer = (double) nServers / (double) survivorNum;
 		
 //		EmpiricalDistribution arrivalDistribution = EmpiricalDistribution.loadDistribution(arrivalFile, 1e-3);
 //		EmpiricalDistribution serviceDistribution = EmpiricalDistribution.loadDistribution(serviceFile, 1e-3);
@@ -59,6 +64,8 @@ public class ClonesMagicExperiment {
 		System.out.println("Service rate as is " + serviceRate);
 		System.out.println("Service rate x" + cores + " is: "+ (serviceRate)*cores);
 		
+		System.out.println("sla: " + sla);
+		
 		System.out.println("Service time 50th " + serviceTime50);
 		System.out.println("Service time 95th " + serviceTime95);
 		System.out.println("Service time 99th " + serviceTime99);
@@ -71,11 +78,8 @@ public class ClonesMagicExperiment {
 
 		// add experiment outputs
 		ExperimentOutput experimentOutput = new ExperimentOutput();
-//		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, 5000);
-//		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, 5000);
-		int warmingUp = 6000 * nServers;
-		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, warmingUp);
-		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, warmingUp);
+		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, 5000);
+		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, 5000);
 		
 		experimentOutput.setJobCollector(nServers);
 		
@@ -94,13 +98,25 @@ public class ClonesMagicExperiment {
 			dataCenter.addServer(server);
 		}//End for i
 		
+		long maxSize = 1000;
+//		double sla = 0.0200;//ms
+		int warmingUpNum = 5000;
+		
+		ServiceTimeFilter serviceTimeFilter = new ServiceTimeFilter(maxSize, sla, warmingUpNum);
+		RandomNGenerator randomNGenerator = new RandomNGenerator(randomNum);
+		
+		experimentInput.setRandomNGenerator(randomNGenerator);
+		experimentInput.setServiceTimeFilter(serviceTimeFilter);
 		experimentInput.setDataCenter(dataCenter);
 		experimentInput.setWorkType(WorkType.SPECULATE);
-		experimentInput.setFilterType(FilterType.None);
+		experimentInput.setFilterType(FilterType.RANDOM_N);
+		experimentInput.setFilterType(FilterType.ServiceFilter);
 
-		int orderOfMag = 8;
-//		int orderOfMag = 9;
-		int printSamples = (int) Math.pow(10, orderOfMag);
+		SurvivorGenerator survivorGenerator = new SurvivorGenerator(survivorNum);
+		experimentInput.setSurvivorGenerator(survivorGenerator);
+		
+//		int orderOfMag = 8;
+//		int printSamples = (int) Math.pow(10, orderOfMag);
 		experiment.setEventLimit(printSamples);
 		
 		// run the experiment
@@ -125,7 +141,14 @@ public class ClonesMagicExperiment {
 		double waitingTime999th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.999);
 		System.out.println("Waiting 999: " + waitingTime999th);
 		
-		return responseTime999th;
+		long filteredJobs = experiment.getJobCollector().getFilteredNum();
+		System.out.println("Filtered Jobs: " + filteredJobs);
+		long finishedJobs = experiment.getJobCollector().getFinishedNum();
+		System.out.println("Finished Jobs: " + finishedJobs);
+		double savedPortion = (double) filteredJobs / (double) (filteredJobs + finishedJobs);
+		System.out.println("savedPortion: " + savedPortion);
+
+		System.out.println("Moving Average: " + experiment.getServieTimeFilter().getMovingAverage());
 		
 //		System.out.println("############ Response time CDF ##############");
 //		experiment.getStats().getStat(StatName.SOJOURN_TIME).printCdf();
@@ -140,19 +163,23 @@ public class ClonesMagicExperiment {
 	}//End run()
 	
 	public static void main(String[] args) {
-		double responseTime999th;
-		int seed = 26;
-		do {
-			double targetRho = Double.valueOf(args[3]);
-			System.out.println("===== Clones Magic Experiment =====");
-			System.out.println("workload: " + args[1]);
-			System.out.println("worker numbers: " + args[2]);
-			System.out.println("targetRho: " + targetRho);
-			System.out.println("seed: " + seed);
-			System.out.println("========================================");
-			ClonesMagicExperiment exp  = new ClonesMagicExperiment();
-			responseTime999th = exp.run(args[0],args[1],Integer.valueOf(args[2]), targetRho,seed);
-			seed++;
-		} while(responseTime999th < 0.0295 || responseTime999th > 0.033);
+		double targetRho = Double.valueOf(args[3]);
+		int randomNum = Integer.valueOf(args[4]);
+		double pruning = Double.valueOf(args[5]) / 1000;
+		int survivorNum = Integer.valueOf(args[6]);
+		int orderOfMag = Integer.valueOf(args[7]);
+		int seed = Integer.valueOf(args[8]);
+		System.out.println("===== Random N Service Filter Experiment =====");
+		System.out.println("workload: " + args[1]);
+		System.out.println("worker numbers: " + args[2]);
+		System.out.println("rho: " + targetRho);
+		System.out.println("random numbers: " + randomNum);
+		System.out.println("pruning: " + pruning);
+		System.out.println("survivor numbers: " + survivorNum);
+		System.out.println("order of magtitude: " + orderOfMag);
+		System.out.println("random seed: " + seed);
+		System.out.println("========================================");
+		RNSFExperiment exp  = new RNSFExperiment();
+		exp.run(args[0],args[1],Integer.valueOf(args[2]),targetRho,randomNum,pruning,survivorNum,orderOfMag,seed);
 	}
 }

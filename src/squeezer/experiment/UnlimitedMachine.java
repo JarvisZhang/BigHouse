@@ -29,7 +29,7 @@
  *
  */
 
-package sawt;
+package squeezer.experiment;
 
 import generator.EmpiricalGenerator;
 import generator.MTRandom;
@@ -37,15 +37,18 @@ import math.EmpiricalDistribution;
 import core.Experiment;
 import core.ExperimentInput;
 import core.ExperimentOutput;
-import core.Constants.FilterType;
 import core.Constants.StatName;
-import core.Constants.WorkType;
+import core.Constants.TimeWeightedStatName;
 import datacenter.DataCenter;
+import datacenter.PowerCappingEnforcer;
 import datacenter.Server;
+import datacenter.PowerNapServer;
+import datacenter.Core.CorePowerPolicy;
+import datacenter.Socket.SocketPowerPolicy;
 
-public class Random1Experiment {
+public class UnlimitedMachine {
 
-	public Random1Experiment(){
+	public UnlimitedMachine(){
 
 	}
 	
@@ -60,8 +63,8 @@ public class Random1Experiment {
 		int sockets = 1;
 		double targetRho = .5;
 		
-		EmpiricalDistribution arrivalDistribution = EmpiricalDistribution.loadDistribution(arrivalFile, 1);
-		EmpiricalDistribution serviceDistribution = EmpiricalDistribution.loadDistribution(serviceFile, 1);
+		EmpiricalDistribution arrivalDistribution = EmpiricalDistribution.loadDistribution(arrivalFile, 1e-3);
+		EmpiricalDistribution serviceDistribution = EmpiricalDistribution.loadDistribution(serviceFile, 1e-3);
 
 		double averageInterarrival = arrivalDistribution.getMean();
 		double averageServiceTime = serviceDistribution.getMean();
@@ -93,27 +96,43 @@ public class Random1Experiment {
 
 		// add experiment outputs
 		ExperimentOutput experimentOutput = new ExperimentOutput();
-		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .999, .05, 5000);
-		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .999, .05, 5000);
-		
-		Experiment experiment = new Experiment("Random 1 experiment", rand, experimentInput, experimentOutput);
+		experimentOutput.addOutput(StatName.SOJOURN_TIME, .05, .95, .05, 5000);
+		experimentOutput.addOutput(StatName.WAIT_TIME, .05, .95, .05, 5000);
+//		experimentOutput.addOutput(StatName.SERVER_LEVEL_CAP, .05, .95, .05, 5000);
+		Experiment experiment = new Experiment("Unlimited test", rand, experimentInput, experimentOutput);
 		
 		// setup datacenter
 		DataCenter dataCenter = new DataCenter();
 		
+//		double capPeriod = 1.0;
+//		double globalCap = 65*nServers;
+//		double maxPower = 100*nServers;
+//		double minPower = 59*nServers;
+//		PowerCappingEnforcer enforcer = new PowerCappingEnforcer(experiment, capPeriod, globalCap, maxPower, minPower);
 		for(int i = 0; i < nServers; i++) {
 			Server server = new Server(sockets, cores, experiment, arrivalGenerator, serviceGenerator);
+//			Server server = new PowerNapServer(sockets, cores, experiment, arrivalGenerator, serviceGenerator, 0.001, 5);
+
+//			server.setSocketPolicy(SocketPowerPolicy.NO_MANAGEMENT);
+//			server.setCorePolicy(CorePowerPolicy.NO_MANAGEMENT);	
+//			double coreActivePower = 40 * (4.0/5)/cores;
+//			double coreHaltPower = coreActivePower*.2;
+//			double coreParkPower = 0;
+//
+//			double socketActivePower = 40 * (1.0/5)/sockets;
+//			double socketParkPower = 0;
+
+//			server.setCoreActivePower(coreActivePower);
+//			server.setCoreParkPower(coreParkPower);
+//			server.setCoreIdlePower(coreHaltPower);
+
+//			server.setSocketActivePower(socketActivePower);
+//			server.setSocketParkPower(socketParkPower);
+//			enforcer.addServer(server);
 			dataCenter.addServer(server);
 		}//End for i
 		
 		experimentInput.setDataCenter(dataCenter);
-		experimentInput.setWorkType(WorkType.DEFAULT);
-		experimentInput.setFilterType(FilterType.None);
-		
-		int orderOfMag = 8;
-//		int orderOfMag = 9;
-		int printSamples = (int) Math.pow(10, orderOfMag);
-		experiment.setEventLimit(printSamples);
 
 		// run the experiment
 		experiment.run();
@@ -124,27 +143,22 @@ public class Random1Experiment {
 		System.out.println("Response Mean: " + responseTimeMean);
 		double responseTime95th = experiment.getStats().getStat(StatName.SOJOURN_TIME).getQuantile(.95);
 		System.out.println("Response 95: " + responseTime95th);
-		double responseTime99th = experiment.getStats().getStat(StatName.SOJOURN_TIME).getQuantile(.99);
-		System.out.println("Response 99: " + responseTime99th);
-		double responseTime999th = experiment.getStats().getStat(StatName.SOJOURN_TIME).getQuantile(.999);
-		System.out.println("Response 999: " + responseTime999th);
 		double waitingTimeMean = experiment.getStats().getStat(StatName.WAIT_TIME).getAverage();
 		System.out.println("Waiting Mean: " + waitingTimeMean);
 		double waitingTime95th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.95);
 		System.out.println("Waiting 95: " + waitingTime95th);
-		double waitingTime99th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.99);
-		System.out.println("Waiting 99: " + waitingTime99th);
-		double waitingTime999th = experiment.getStats().getStat(StatName.WAIT_TIME).getQuantile(.999);
-		System.out.println("Waiting 999: " + waitingTime999th);
+//		double averageServerLevelCap = experiment.getStats().getStat(StatName.SERVER_LEVEL_CAP).getAverage();
+//		System.out.println("Average Server Cap : " + averageServerLevelCap);
+		
 	}//End run()
 	
 	public static void main(String[] args) {
-		System.out.println("===== Random 1 Experiment =====");
+		System.out.println("===== Unlimited Machine Experiment =====");
 		System.out.println("workload: " + args[1]);
 		System.out.println("server numbers: " + args[2]);
 		System.out.println("========================================");
-		Random1Experiment exp  = new Random1Experiment();
+		UnlimitedMachine exp  = new UnlimitedMachine();
 		exp.run(args[0],args[1],Integer.valueOf(args[2]));
 	}
 	
-}//End Random1Experimen
+}//End UnlimitedMachine

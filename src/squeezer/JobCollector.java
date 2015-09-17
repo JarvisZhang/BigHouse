@@ -1,4 +1,4 @@
-package sawt;
+package squeezer;
 
 import java.util.HashMap;
 import java.util.Map;

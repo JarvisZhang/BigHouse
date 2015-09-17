@@ -35,7 +35,7 @@ import java.io.Serializable;
 
 import core.Constants.StatName;
 import core.Constants.TimeWeightedStatName;
-import sawt.JobCollector;
+import squeezer.JobCollector;
 import stat.Statistic;
 import stat.StatisticsCollection;
 import stat.TimeWeightedStatistic;

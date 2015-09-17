@@ -37,8 +37,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import sawt.RandomInfo;
-import sawt.SurvivorGenerator;
+import squeezer.RandomInfo;
+import squeezer.SurvivorGenerator;
 import stat.Statistic;
 import stat.TimeWeightedStatistic;
 import core.Constants;

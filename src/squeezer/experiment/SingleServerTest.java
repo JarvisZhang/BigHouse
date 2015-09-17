@@ -1,4 +1,4 @@
-package sawt;
+package squeezer.experiment;
 
 import java.io.FileWriter;
 import java.io.IOException;

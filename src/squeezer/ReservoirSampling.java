@@ -1,4 +1,4 @@
-package sawt;
+package squeezer;
 
 import java.util.Random;
 import java.util.Vector;
