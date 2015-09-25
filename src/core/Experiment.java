@@ -229,13 +229,13 @@ public final class Experiment implements Serializable, Cloneable {
                 while (statIter.hasNext()) {
                     Statistic currentStat = statIter.next();
                     if (!currentStat.isConverged()) {
-//                        System.out.println("Still waiting for "
-//                                + currentStat.getStatName()
-//                                + " at mean converge of "
-//                                + currentStat.getMeanAccuracy()
-//                                + " and quantile converge of "
-//                                + currentStat.getQuantileAccuracy());
-//                        currentStat.printStatInfo();
+                        System.out.println("Still waiting for "
+                                + currentStat.getStatName()
+                                + " at mean converge of "
+                                + currentStat.getMeanAccuracy()
+                                + " and quantile converge of "
+                                + currentStat.getQuantileAccuracy());
+                        currentStat.printStatInfo();
                     }
                 }
                 orderOfMag++;
